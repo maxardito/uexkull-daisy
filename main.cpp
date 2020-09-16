@@ -1,6 +1,8 @@
 #include "daisy_seed.h"
 #include "daisysp.h"
 
+#define NUM_OSC 64
+
 // Use the daisy namespace to prevent having to type
 // daisy:: before all libdaisy functions
 using namespace daisy;
@@ -8,8 +10,10 @@ using namespace daisysp;
 
 // Declare a DaisySeed object called hardware
 DaisySeed hardware;
-Oscillator osc;
+Oscillator osc[NUM_OSC];
 AdEnv env;
+
+float fund = 200;
 
 Switch button1;
 
@@ -28,17 +32,20 @@ void AudioCallback(float *in, float *out, size_t size)
 
     //Convert floating point knob to midi (0-127)
     //Then convert midi to freq. in Hz
-    osc.SetFreq(mtof(hardware.adc.GetFloat(0) * 127));
+    //osc.SetFreq(mtof(hardware.adc.GetFloat(0) * 127));
 
     //Fill the block with samples
     for (size_t i = 0; i < size; i += 2)
     {
         //Get the next envelope value
         env_out = env.Process();
-        //Set the oscillator volume to the latest env value
-        osc.SetAmp(env_out);
-        //get the next oscillator sample
-        osc_out = osc.Process();
+        for (int i = 0; i < NUM_OSC; i++)
+        {
+            //Set the oscillator volume to the latest env value
+            osc[i].SetAmp(env_out);
+            //get the next oscillator sample
+            osc_out = osc[i].Process();
+        }
 
         //Set the left and right outputs
         out[i] = osc_out;
@@ -70,10 +77,14 @@ int main(void)
     hardware.adc.Init(&adcConfig, 1);
 
     //Set up oscillator
-    osc.Init(samplerate);
-    osc.SetWaveform(osc.WAVE_SIN);
-    osc.SetAmp(1.f);
-    osc.SetFreq(1000);
+    for (int i = 0; i < NUM_OSC; i++)
+    {
+        osc[i].Init(samplerate);
+        osc[i].SetWaveform(osc[i].WAVE_SIN);
+        osc[i].SetAmp(1.f / (float)NUM_OSC);
+        osc[i].SetFreq(fund);
+        fund += (fund * 0.5);
+    }
 
     //Set up volume envelope
     env.Init(samplerate);
