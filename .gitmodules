@@ -4,3 +4,6 @@
 [submodule "DaisySP"]
 	path = DaisySP
 	url = https://github.com/electro-smith/DaisySP
+[submodule "cute-op"]
+	path = cute-op
+	url = https://github.com/cutelabnyc/cute-op
