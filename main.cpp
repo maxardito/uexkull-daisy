@@ -1,5 +1,7 @@
 #include "daisy_seed.h"
 #include "daisysp.h"
+#include "edge.h"
+#include "lib/banks.h"
 
 #define NUM_OSC 6
 
@@ -33,7 +35,7 @@ void AudioCallback(float *in, float *out, size_t size)
 
 int main(void)
 {
-    float freqArray[NUM_OSC] = {440, 900, 660, 990, 100, 800};
+    t_banks banks;
     float lfoArray[NUM_OSC] = {0.1, 0.22, 0.8, 1, 0.43, 0.12};
 
     // Configure and Initialize the Daisy Seed
@@ -54,13 +56,17 @@ int main(void)
     // Set the ADC to use our configuration
     hardware.adc.Init(&adcConfig, 1);
 
+    banks_init(&banks, NUM_OSC);
+    banks_setFreq(&banks, 440);
+    banks_setMult(&banks, 0.5);
+
     // Set up oscillators and LFOs
     for (int i = 0; i < NUM_OSC; i++)
     {
         osc[i].Init(samplerate);
         osc[i].SetWaveform(osc[i].WAVE_SIN);
         osc[i].SetAmp(0.5f / (float)NUM_OSC);
-        osc[i].SetFreq(freqArray[i]);
+        osc[i].SetFreq(banks.freq[i]);
 
         lfo[i].Init(samplerate);
         lfo[i].SetWaveform(lfo[i].WAVE_SIN);
