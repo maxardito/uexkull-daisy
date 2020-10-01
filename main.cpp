@@ -1,7 +1,6 @@
 #include "daisy_seed.h"
 #include "daisysp.h"
-#include "edge.h"
-#include "lib/banks.h"
+#include "cuteop.h"
 
 #define NUM_OSC 6
 
