@@ -35,6 +35,7 @@ void AudioCallback(float *in, float *out, size_t size)
 int main(void)
 {
     t_banks banks;
+
     float lfoArray[NUM_OSC] = {0.1, 0.22, 0.8, 1, 0.43, 0.12};
 
     // Configure and Initialize the Daisy Seed

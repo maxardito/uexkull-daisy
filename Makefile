@@ -68,6 +68,9 @@ C_SOURCES += \
 $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
 $(SYSTEM_FILES_DIR)/startup_stm32h750xx.c
 
+C_SOURCES += \
+$(CUTEOP_DIR)/src/internal/banks.c
+
 #$(SYSTEM_FILES_DIR)/system_stm32h7xx.c
 
 #ASM_SOURCES += \
@@ -139,8 +142,8 @@ C_INCLUDES += \
 -I$(LIBDAISY_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/ \
 -I$(SYSTEM_FILES_DIR)/ \
 -I$(DAISYSP_DIR) \
--I$(CUTEOP_DIR) \
 -I$(CUTEOP_DIR)/src/ \
+-I$(CUTEOP_DIR)/src/internal \
 
 
 
@@ -186,11 +189,6 @@ LIBDIR = -L$(LIBDAISY_DIR)/build
 ifdef DAISYSP_DIR
 LIBS += -ldaisysp
 LIBDIR += -L$(DAISYSP_DIR)/build
-endif
-
-ifdef CUTEOP_DIR
-LIBS += -lcuteop
-LIBDIR += -L$(CUTEOP_DIR)/build/src
 endif
 
 LDFLAGS = $(MCU) --specs=nano.specs --specs=nosys.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
