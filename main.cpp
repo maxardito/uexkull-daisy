@@ -1,91 +1,83 @@
 #include "daisy_seed.h"
 #include "daisysp.h"
+#include "cuteop.h"
 
-// Use the daisy namespace to prevent having to type
-// daisy:: before all libdaisy functions
+#define NUM_OSC 32
+
 using namespace daisy;
 using namespace daisysp;
 
 // Declare a DaisySeed object called hardware
 DaisySeed hardware;
-Oscillator osc;
-AdEnv env;
+Oscillator osc[NUM_OSC];
+Oscillator lfo;
 
-Switch button1;
+t_banks banks;
 
 void AudioCallback(float *in, float *out, size_t size)
 {
-    float osc_out, env_out;
-
-    //Nobody likes a bouncy button
-    button1.Debounce();
-
-    //If you push the button,...
-    if (button1.RisingEdge())
-    {
-        env.Trigger(); //Trigger the envelope!
-    }
-
-    //Convert floating point knob to midi (0-127)
-    //Then convert midi to freq. in Hz
-    osc.SetFreq(mtof(hardware.adc.GetFloat(0) * 127));
-
-    //Fill the block with samples
+    // Fill the block with samples
     for (size_t i = 0; i < size; i += 2)
     {
-        //Get the next envelope value
-        env_out = env.Process();
-        //Set the oscillator volume to the latest env value
-        osc.SetAmp(env_out);
-        //get the next oscillator sample
-        osc_out = osc.Process();
+        float sig = 0;
 
-        //Set the left and right outputs
-        out[i] = osc_out;
-        out[i + 1] = osc_out;
+        // Get next osc sample
+        // NOTE: pot controlling frequency -
+        // osc[0].SetFreq(mtof(hardware.adc.GetFloat(0) * 127));
+
+        for (int j = 0; j < NUM_OSC; j++)
+        {
+            //banks_setMult(&banks, (double)(lfo.Process() + 0.5) / 3);
+            //osc[j].SetFreq(banks.freq[j]);
+            sig += (osc[j].Process()); //* lfo[j].Process());
+        }
+        // Set the left and right outputs
+        out[i] = sig;
+        out[i + 1] = sig;
     }
 }
 
 int main(void)
 {
+    //float lfoArray[NUM_OSC] = {3, 15, 0.8, 1, 0.43, 0.12};
+
     // Configure and Initialize the Daisy Seed
     // These are separate to allow reconfiguration of any of the internal
     // components before initialization.
     hardware.Configure();
     hardware.Init();
-    ;
 
-    //How many samples we'll output per second
+    // How many samples we'll output per second
     float samplerate = hardware.AudioSampleRate();
 
-    //Create an ADC configuration
+    // Create an ADC configuration
     AdcChannelConfig adcConfig;
-    //Add pin 21 as an analog input in this config. We'll use this to read the knob
+
+    // Add pin 21 as an analog input in this config. We'll use this to read the knob
     adcConfig.InitSingle(hardware.GetPin(21));
 
-    //Initialize the button on pin 28
-    button1.Init(hardware.GetPin(28), samplerate / 48.f);
-
-    //Set the ADC to use our configuration
+    // Set the ADC to use our configuration
     hardware.adc.Init(&adcConfig, 1);
 
-    //Set up oscillator
-    osc.Init(samplerate);
-    osc.SetWaveform(osc.WAVE_SIN);
-    osc.SetAmp(1.f);
-    osc.SetFreq(1000);
+    banks_init(&banks, NUM_OSC);
+    banks_setFreq(&banks, 440);
+    banks_setMult(&banks, (double)1.0);
 
-    //Set up volume envelope
-    env.Init(samplerate);
-    //Envelope attack and decay times
-    env.SetTime(ADENV_SEG_ATTACK, .01);
-    env.SetTime(ADENV_SEG_DECAY, .4);
-    //minimum and maximum envelope values
-    env.SetMin(0.0);
-    env.SetMax(1.f);
-    env.SetCurve(0); // linear
+    // Set up oscillators and LFOs
+    for (int i = 0; i < NUM_OSC; i++)
+    {
+        osc[i].Init(samplerate);
+        osc[i].SetWaveform(osc[i].WAVE_SIN);
+        osc[i].SetAmp(0.5f / (float)NUM_OSC);
+        osc[i].SetFreq(banks.freq[i]);
 
-    //Start the adc
+        //lfo.Init(samplerate);
+        //lfo.SetWaveform(lfo.WAVE_SIN);
+        //lfo.SetAmp(0.5f);
+        //lfo.SetFreq(0.01);
+    }
+
+    // Start the adc
     hardware.adc.Start();
 
     //Start calling the audio callback
