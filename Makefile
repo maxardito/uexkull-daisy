@@ -69,7 +69,7 @@ $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
 $(SYSTEM_FILES_DIR)/startup_stm32h750xx.c
 
 C_SOURCES += \
-$(CUTEOP_DIR)/src/internal/banks.c
+#$(CUTEOP_DIR)/src/internal/banks.c
 
 #$(SYSTEM_FILES_DIR)/system_stm32h7xx.c
 
