@@ -11,8 +11,10 @@
 #ifndef UEXKULL_H
 #define UEXKULL_H
 
+#define NUM_BANKS 2
+#define NUM_OSC 31
+
 #include <cuteop.h>
-#include "globals.h"
 #include "bank.h"
 
 /**
@@ -30,8 +32,7 @@ typedef struct uexkull
 
  */
 void UX_init(uexkull_t *self,
-             bank_t *centralBanks,
-             bank_t *reactiveBanks
+             float samplerate
              /*t_sequence f*/);
 
 /**
@@ -40,5 +41,14 @@ void UX_init(uexkull_t *self,
  * TODO: Add and describe parameters
  */
 void UX_destroy(uexkull_t *self);
+
+/**
+ * Processes a single sample in the module's IO. The process
+ * function acts as a bridge between the Daisy's DSP library
+ * and Cute-Op's mathematical sequence generating module.
+ *
+ * TODO: Add and describe parameters
+ */
+float UX_process(uexkull_t *self);
 
 #endif /* OPPORTUNITY_H */

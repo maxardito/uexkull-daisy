@@ -5,9 +5,10 @@ TARGET = Uexkull
 CPP_SOURCES = main.cpp
 
 # Library Locations
-LIBDAISY_DIR = ./libdaisy
+LIBDAISY_DIR = ./libDaisy
 DAISYSP_DIR = ./DaisySP
 CUTEOP_DIR = ./cute-op
+LOCAL_LIB_DIR = ./lib
 
 # Core location, and generic Makefile.
 SYSTEM_FILES_DIR = $(LIBDAISY_DIR)/core
@@ -64,12 +65,14 @@ SYSTEM_FILES_DIR ?= \
 
 CPP_SOURCES ?= 
 
+CPP_SOURCES += \
+$(LOCAL_LIB_DIR)/bank.cpp \
+$(LOCAL_LIB_DIR)/uexkull.cpp 
+
 C_SOURCES += \
 $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
 $(SYSTEM_FILES_DIR)/startup_stm32h750xx.c
 
-C_SOURCES += \
-#$(CUTEOP_DIR)/src/internal/banks.c
 
 #$(SYSTEM_FILES_DIR)/system_stm32h7xx.c
 
@@ -128,7 +131,6 @@ C_DEFS +=  \
 -DHSE_VALUE=16000000 \
 -DSTM32H750xx
 
-
 # AS includes
 AS_INCLUDES =
 
@@ -144,9 +146,7 @@ C_INCLUDES += \
 -I$(DAISYSP_DIR) \
 -I$(CUTEOP_DIR)/src/ \
 -I$(CUTEOP_DIR)/src/internal \
-
-
-
+-I$(LOCAL_LIB_DIR)/
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -181,7 +181,6 @@ CPP_STANDARD = -std=gnu++14
 LDSCRIPT = $(SYSTEM_FILES_DIR)/STM32H750IB_flash.lds
 
 # libraries
-
 LIBS += -ldaisy -lc -lm -lnosys
 LIBDIR = -L$(LIBDAISY_DIR)/build 
 #LIBDIR = -L./VisualGDB/Release
