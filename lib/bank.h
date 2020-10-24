@@ -44,7 +44,7 @@ typedef struct bank
 } bank_t;
 
 /**
- * Initialize the 'uexkull' struct
+ * Initialize the 'bank' struct
  */
 void BK_init(bank_t *self,
              uint8_t numOsc,
@@ -54,11 +54,17 @@ void BK_init(bank_t *self,
              waveform_t waveform);
 
 /**
- * Frees the 'uexkull' struct
+ * Frees the 'bank' struct
  *
  * TODO: Add and describe parameters
  */
 void BK_destroy(bank_t *self);
+
+/**
+ * Sets the frequencies of the bank with an incoming
+ * array of floats
+ */
+void BK_setFrequencyVectors(bank_t *self, float *vector, uint8_t numFreq);
 
 /**
  * Process a single sample from Uexkull

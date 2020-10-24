@@ -11,8 +11,8 @@
 #ifndef UEXKULL_H
 #define UEXKULL_H
 
-#define NUM_BANKS 2
-#define NUM_OSC 31
+#define NUM_BANKS 1
+#define NUM_OSC 10
 
 #include <cuteop.h>
 #include "bank.h"
@@ -24,6 +24,7 @@ typedef struct uexkull
 {
     bank_t centralBanks[NUM_BANKS];
     bank_t reactiveBanks[NUM_BANKS];
+    float freqs[NUM_OSC];
     //sequence_t f;
 } uexkull_t;
 
@@ -49,6 +50,6 @@ void UX_destroy(uexkull_t *self);
  *
  * TODO: Add and describe parameters
  */
-float UX_process(uexkull_t *self);
+float UX_process(uexkull_t *self, float mult, float freq);
 
 #endif /* OPPORTUNITY_H */

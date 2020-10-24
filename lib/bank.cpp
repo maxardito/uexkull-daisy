@@ -36,6 +36,14 @@ void BK_init(bank_t *self,
     }
 }
 
+void BK_setFrequencyVectors(bank_t *self, float *vector, uint8_t numFreq)
+{
+    for (int i = 0; i < numFreq; i++)
+    {
+        self->osc[i].SetFreq(vector[i]);
+    }
+}
+
 float BK_process(bank_t *self)
 {
     float sig = 0;
