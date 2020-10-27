@@ -3,6 +3,9 @@
 #include "uexkull.h"
 //#include "cuteop.h"
 
+#define MULT_POT 21
+#define FREQ_POT 20
+
 using namespace daisy;
 using namespace daisysp;
 
@@ -17,12 +20,13 @@ uexkull_t uexkull;
 
 void AudioCallback(float *in, float *out, size_t size)
 {
+    float mult = hardware.adc.GetFloat(0);
+    float freq = hardware.adc.GetFloat(1);
     // Fill the block with samples
     for (size_t i = 0; i < size; i += 2)
     {
         float sig = 0;
-
-        sig = UX_process(&uexkull, 1, 440.0f);
+        sig = UX_process(&uexkull, mult, freq * 10000.0f);
 
         // Set the left and right outputs
         out[i] = sig;
@@ -40,12 +44,18 @@ void HardwareInit()
     hardware.Init();
 
     // Create an ADC configuration
-    AdcChannelConfig multKnob;
-    multKnob.InitSingle(hardware.GetPin(21));
-    //knob1.Init(hardware.adc.GetPtr(28), hardware.AudioSampleRate() / 100);
+    AdcChannelConfig knobs[2];
+    knobs[0].InitSingle(hardware.GetPin(MULT_POT));
+    knobs[1].InitSingle(hardware.GetPin(FREQ_POT));
+
+    //knob1.Init(hardware.adc.GetPtr(21), hardware.AudioSampleRate() / 100);
+
     //mult.Init(knob1, 0.0f, 2.0f, mult.LOGARITHMIC);
 
-    hardware.adc.Init(&multKnob, 1);
+    hardware.adc.Init(knobs, 2);
+
+    // Start the adc
+    hardware.adc.Start();
 }
 
 int main(void)
@@ -57,9 +67,6 @@ int main(void)
     lfo.SetWaveform(lfo.WAVE_SIN);
     lfo.SetAmp(0.5f);
     lfo.SetFreq(0.5);
-
-    // Start the adc
-    hardware.adc.Start();
 
     //Start calling the audio callback
     hardware.StartAudio(AudioCallback);

@@ -28,6 +28,11 @@ void getFreqVector(uexkull_t *self, float fundamental, float mult)
     for (int i = 1; i < NUM_OSC; i++)
     {
         self->freqs[i] = (self->freqs[i - 1] + (self->freqs[i - 1] * mult));
+
+        if (self->freqs[i] > MAX_FREQ)
+        {
+            self->freqs[i] = 0;
+        }
     }
 }
 
