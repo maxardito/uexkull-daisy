@@ -9,11 +9,6 @@
 using namespace daisy;
 using namespace daisysp;
 
-Oscillator lfo;
-
-AnalogControl knob1;
-Parameter mult;
-
 // Declare a DaisySeed object called hardware
 DaisySeed hardware;
 uexkull_t uexkull;
@@ -21,12 +16,13 @@ uexkull_t uexkull;
 void AudioCallback(float *in, float *out, size_t size)
 {
     float mult = hardware.adc.GetFloat(0);
-    float freq = hardware.adc.GetFloat(1);
+    float freq = hardware.adc.GetFloat(1) * 20000;
+
     // Fill the block with samples
     for (size_t i = 0; i < size; i += 2)
     {
         float sig = 0;
-        sig = UX_process(&uexkull, mult, freq * 10000.0f);
+        sig = UX_process(&uexkull, mult, freq);
 
         // Set the left and right outputs
         out[i] = sig;
@@ -48,10 +44,6 @@ void HardwareInit()
     knobs[0].InitSingle(hardware.GetPin(MULT_POT));
     knobs[1].InitSingle(hardware.GetPin(FREQ_POT));
 
-    //knob1.Init(hardware.adc.GetPtr(21), hardware.AudioSampleRate() / 100);
-
-    //mult.Init(knob1, 0.0f, 2.0f, mult.LOGARITHMIC);
-
     hardware.adc.Init(knobs, 2);
 
     // Start the adc
@@ -63,10 +55,6 @@ int main(void)
     HardwareInit();
 
     UX_init(&uexkull, hardware.AudioSampleRate());
-    lfo.Init(hardware.AudioSampleRate());
-    lfo.SetWaveform(lfo.WAVE_SIN);
-    lfo.SetAmp(0.5f);
-    lfo.SetFreq(0.5);
 
     //Start calling the audio callback
     hardware.StartAudio(AudioCallback);
