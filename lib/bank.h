@@ -9,19 +9,16 @@
 
 #include <cuteop.h>
 #include "globals.h"
-#include "daisysp.h"
-
-using namespace daisysp;
 
 /**
  * waveform_t: Waveforms selection for bank oscillators
  */
 typedef enum
 {
-    WAVE_SIN,
-    WAVE_SQUARE,
-    WAVE_TRI,
-    WAVE_SAW
+    SIN,
+    SQUARE,
+    TRI,
+    SAW
 } waveform_t;
 
 /**
@@ -29,8 +26,8 @@ typedef enum
  */
 typedef struct bank
 {
-    Oscillator *osc;
-    Oscillator *lfo;
+    osc_t *osc;
+    osc_t *lfo;
 
     uint8_t _numOsc; // Number of oscillators in the bank
 

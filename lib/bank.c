@@ -11,8 +11,8 @@ void BK_init(bank_t *self,
 {
     self->_numOsc = numOsc;
 
-    self->osc = (Oscillator *)malloc(sizeof(Oscillator) * self->_numOsc);
-    self->lfo = (Oscillator *)malloc(sizeof(Oscillator) * self->_numOsc);
+    self->osc = (osc_t *)malloc(sizeof(osc_t) * self->_numOsc);
+    self->lfo = (osc_t *)malloc(sizeof(osc_t) * self->_numOsc);
 
     self->_sampleRate = sampleRate;
     self->_fund = fund;
@@ -20,19 +20,12 @@ void BK_init(bank_t *self,
     /*modular_t _modular;*/
     self->_1vo = 0;
 
-    self->waveform = WAVE_SIN;
+    self->waveform = SIN;
 
     for (int i = 0; i < numOsc; i++)
     {
-        self->osc[i].Init(self->_sampleRate);
-        self->osc[i].SetWaveform(self->waveform);
-        self->osc[i].SetAmp(0.5f / (float)numOsc);
-        self->osc[i].SetFreq(self->_fund);
-
-        self->lfo[i].Init(self->_sampleRate);
-        self->lfo[i].SetWaveform(self->waveform);
-        self->lfo[i].SetAmp(0.5f);
-        self->lfo[i].SetFreq(TEST_LFO_FREQ);
+        self->osc[i] = *sine_init();
+        self->lfo[i] = *sine_init();
     }
 }
 
@@ -40,7 +33,7 @@ void BK_setFrequencyVectors(bank_t *self, float *vector, uint8_t numFreq)
 {
     for (int i = 0; i < numFreq; i++)
     {
-        self->osc[i].SetFreq(vector[i]);
+        osc_time(&(self->osc[i]), (float)(vector[i] / (self->_sampleRate / 2)));
     }
 }
 
@@ -50,7 +43,7 @@ float BK_process(bank_t *self)
 
     for (int i = 0; i < self->_numOsc; i++)
     {
-        sig += self->osc[i].Process();
+        sig += osc_step(&(self->osc[i]), 0) / self->_numOsc;
     }
 
     return sig;

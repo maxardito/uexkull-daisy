@@ -63,15 +63,12 @@ SYSTEM_FILES_DIR ?= \
 # source
 ######################################
 
-CPP_SOURCES ?= 
-
-CPP_SOURCES += \
-$(LOCAL_LIB_DIR)/bank.cpp \
-$(LOCAL_LIB_DIR)/uexkull.cpp 
-
 C_SOURCES += \
 $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
-$(SYSTEM_FILES_DIR)/startup_stm32h750xx.c
+$(SYSTEM_FILES_DIR)/startup_stm32h750xx.c \
+$(CUTEOP_DIR)/src/internal/oscillator.c \
+$(LOCAL_LIB_DIR)/bank.c \
+$(LOCAL_LIB_DIR)/uexkull.c 
 
 
 #$(SYSTEM_FILES_DIR)/system_stm32h7xx.c

@@ -10,14 +10,14 @@ void UX_init(uexkull_t *self, float samplerate)
                 samplerate,
                 200.0f,
                 0.5f,
-                WAVE_SIN);
+                SIN);
 
         BK_init(&(self->reactiveBanks[i]),
                 NUM_OSC,
                 samplerate,
                 1.0f,
                 1.0f,
-                WAVE_SIN);
+                SIN);
     }
 }
 

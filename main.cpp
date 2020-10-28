@@ -1,7 +1,11 @@
 #include "daisy_seed.h"
 #include "daisysp.h"
+#include "cuteop.h"
+
+extern "C"
+{
 #include "uexkull.h"
-//#include "cuteop.h"
+}
 
 #define MULT_POT 21
 #define FREQ_POT 20
