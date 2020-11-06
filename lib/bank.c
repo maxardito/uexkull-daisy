@@ -24,8 +24,8 @@ void BK_init(bank_t *self,
 
     for (int i = 0; i < numOsc; i++)
     {
-        self->osc[i] = *sine_init();
-        self->lfo[i] = *sine_init();
+        self->osc[i] = *osc_init();
+        self->lfo[i] = *osc_init();
     }
 }
 
