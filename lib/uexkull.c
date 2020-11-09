@@ -10,7 +10,7 @@ void UX_init(uexkull_t *self, float samplerate)
             SIN);
 }
 
-void UX_calculateFreqVector(uexkull_t *self, float fundamental, float mult)
+static void _UX_calculateFreqVector(uexkull_t *self, float fundamental, float mult)
 {
     self->freqs[0] = fundamental;
 
@@ -25,7 +25,7 @@ void UX_calculateFreqVector(uexkull_t *self, float fundamental, float mult)
     }
 }
 
-void UX_calculateUmweltVector(uexkull_t *self, float mult)
+static void _UX_calculateUmweltVector(uexkull_t *self, float mult)
 {
     for (int i = 0; i < NUM_OSC; i++)
     {
@@ -39,7 +39,7 @@ void UX_process(uexkull_t *self, float mult, float freq)
     self->sig[0] = 0;
 
     // Calculate main frequency vector and assign to bank
-    UX_calculateFreqVector(self, freq, mult);
+    _UX_calculateFreqVector(self, freq, mult);
 
     BK_setFrequencyVectors(&(self->bank), self->freqs, NUM_OSC);
 
@@ -53,7 +53,7 @@ void UX_process(uexkull_t *self, float mult, float freq)
 
         // TODO: Calculate frequency vector as complementary to main bank,
         // rather than a unique frequency array
-        UX_calculateUmweltVector(self, (float)(i / NUM_OUTPUTS));
+        _UX_calculateUmweltVector(self, (float)(i / NUM_OUTPUTS));
         BK_setFrequencyVectors(&(self->bank), self->freqs, NUM_OSC);
 
         self->sig[i] += BK_process(&(self->bank));
