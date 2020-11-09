@@ -2,26 +2,15 @@
 
 void UX_init(uexkull_t *self, float samplerate)
 {
-    for (int i = 0; i < NUM_BANKS; i++)
-    {
-
-        BK_init(&(self->centralBanks[i]),
-                NUM_OSC,
-                samplerate,
-                200.0f,
-                0.5f,
-                SIN);
-
-        BK_init(&(self->reactiveBanks[i]),
-                NUM_OSC,
-                samplerate,
-                1.0f,
-                1.0f,
-                SIN);
-    }
+    BK_init(&(self->bank),
+            NUM_OSC,
+            samplerate,
+            200.0f,
+            0.5f,
+            SIN);
 }
 
-void getFreqVector(uexkull_t *self, float fundamental, float mult)
+void UX_calculateFreqVector(uexkull_t *self, float fundamental, float mult)
 {
     self->freqs[0] = fundamental;
 
@@ -39,14 +28,11 @@ void getFreqVector(uexkull_t *self, float fundamental, float mult)
 float UX_process(uexkull_t *self, float mult, float freq)
 {
     float sig = 0;
-    getFreqVector(self, freq, mult);
+    UX_calculateFreqVector(self, freq, mult);
 
-    for (int i = 0; i < NUM_BANKS; i++)
-    {
-        BK_setFrequencyVectors(&(self->centralBanks[i]), self->freqs, NUM_OSC);
+    BK_setFrequencyVectors(&(self->bank), self->freqs, NUM_OSC);
 
-        sig += (BK_process(&(self->centralBanks[i])) / NUM_BANKS);
-    }
+    sig += BK_process(&(self->bank));
 
     return sig;
 }

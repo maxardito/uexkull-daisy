@@ -11,7 +11,6 @@
 #ifndef UEXKULL_H
 #define UEXKULL_H
 
-#define NUM_BANKS 1
 #define NUM_OSC 32
 #define MAX_FREQ 20000
 
@@ -23,8 +22,7 @@
  */
 typedef struct uexkull
 {
-    bank_t centralBanks[NUM_BANKS];
-    bank_t reactiveBanks[NUM_BANKS];
+    bank_t bank;
     float freqs[NUM_OSC];
     //sequence_t f;
 } uexkull_t;
