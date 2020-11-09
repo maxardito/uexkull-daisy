@@ -12,6 +12,7 @@
 #define UEXKULL_H
 
 #define NUM_OSC 32
+#define NUM_OUTPUTS 4
 #define MAX_FREQ 20000
 
 #include <cuteop.h>
@@ -24,6 +25,14 @@ typedef struct uexkull
 {
     bank_t bank;
     float freqs[NUM_OSC];
+    float sig[NUM_OUTPUTS];
+
+    /**
+     * NOTE: It'd be cool to have a sequence
+     * class in the future where we can compute
+     * mathematical sequences with a function 
+     * pointer
+     */
     //sequence_t f;
 } uexkull_t;
 
@@ -49,6 +58,6 @@ void UX_destroy(uexkull_t *self);
  *
  * TODO: Add and describe parameters
  */
-float UX_process(uexkull_t *self, float mult, float freq);
+void UX_process(uexkull_t *self, float mult, float freq);
 
 #endif /* OPPORTUNITY_H */
