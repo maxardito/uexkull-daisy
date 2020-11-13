@@ -65,8 +65,10 @@ SYSTEM_FILES_DIR ?= \
 
 C_SOURCES += \
 $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
+$(LIBDAISY_DIR)/Drivers/CMSIS/DSP/Source/BasicMathFunctions/arm_mult_f32.c \
 $(SYSTEM_FILES_DIR)/startup_stm32h750xx.c \
 $(CUTEOP_DIR)/src/internal/oscillator.c \
+$(CUTEOP_DIR)/src/dsp_utils/lut_cos.c \
 $(LOCAL_LIB_DIR)/bank.c \
 $(LOCAL_LIB_DIR)/uexkull.c 
 
@@ -126,7 +128,9 @@ C_DEFS +=  \
 -DSTM32H750xx \
 -DUSE_HAL_DRIVER \
 -DHSE_VALUE=16000000 \
--DSTM32H750xx
+-DSTM32H750xx \
+-DARM_MATH_CM7 \
+-D__FPU_PRESENT
 
 # AS includes
 AS_INCLUDES =
@@ -139,11 +143,13 @@ C_INCLUDES += \
 -I$(LIBDAISY_DIR)/Drivers/CMSIS/Include/ \
 -I$(LIBDAISY_DIR)/Drivers/CMSIS/Device/ST/STM32H7xx/Include \
 -I$(LIBDAISY_DIR)/Drivers/STM32H7xx_HAL_Driver/Inc/ \
+-I$(LIBDAISY_DIR)/Drivers/CMSIS/DSP/Include \
 -I$(SYSTEM_FILES_DIR)/ \
 -I$(DAISYSP_DIR) \
--I$(CUTEOP_DIR)/src/ \
--I$(CUTEOP_DIR)/src/internal \
+-I$(CUTEOP_DIR)/src \
+-I$(CUTEOP_DIR)/src/dsp_utils \
 -I$(LOCAL_LIB_DIR)/
+
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

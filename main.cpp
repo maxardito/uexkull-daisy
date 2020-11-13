@@ -17,21 +17,25 @@ using namespace daisysp;
 DaisySeed hardware;
 uexkull_t uexkull;
 
-float *channel_array;
-
 void AudioCallback(float *in, float *out, size_t size)
 {
     float mult = hardware.adc.GetFloat(0);
     float freq = hardware.adc.GetFloat(1) * 20000;
+
+    float sig = 0;
+    float sig1 = 0;
 
     // Fill the block with samples
     for (size_t i = 0; i < size; i += 2)
     {
         UX_process(&uexkull, mult, freq);
 
+        sig = uexkull.sig[0];
+        sig1 = uexkull.sig[2];
+
         // Set the left and right outputs
-        out[i] = uexkull.sig[0];
-        out[i + 1] = uexkull.sig[1];
+        out[i] = sig;
+        out[i + 1] = sig1;
     }
 }
 
@@ -58,8 +62,6 @@ void HardwareInit()
 int main(void)
 {
     HardwareInit();
-
-    channel_array = (float *)malloc(sizeof(float) * 4);
 
     UX_init(&uexkull, hardware.AudioSampleRate());
 

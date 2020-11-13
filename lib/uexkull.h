@@ -11,7 +11,7 @@
 #ifndef UEXKULL_H
 #define UEXKULL_H
 
-#define NUM_OSC 32
+#define NUM_OSC 24
 #define NUM_OUTPUTS 4
 #define MAX_FREQ 20000
 
@@ -23,8 +23,8 @@
  */
 typedef struct uexkull
 {
-    bank_t bank;
-    float freqs[NUM_OSC];
+    bank_t bank[NUM_OUTPUTS];
+    float freqs[NUM_OUTPUTS][NUM_OSC];
     float sig[NUM_OUTPUTS];
 
     /**

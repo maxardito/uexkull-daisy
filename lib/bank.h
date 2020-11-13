@@ -27,7 +27,10 @@ typedef enum
 typedef struct bank
 {
     osc_t *osc;
-    osc_t *lfo;
+    //osc_t *lfo;
+
+    float *lut_ids;
+    float *frequencies;
 
     uint8_t _numOsc; // Number of oscillators in the bank
 
@@ -36,6 +39,8 @@ typedef struct bank
     float _mult;            // Bank frequence sequence multiplier value
     /*modular_t _modular;*/ // Interface for FM/PM/AM functions
     float _1vo;             // 1V/Oct input
+
+    float *_invHalfSampleRate;
 
     waveform_t waveform; // Waveform for all bank oscillators
 } bank_t;
