@@ -94,28 +94,28 @@ float BK_process(bank_t *self)
         baseAsFloat[i] = base[i];
         lut[i] = cos_lut[base[i]];
         lutOffset[i] = cos_lut[base[i] + 1];
-        // self->lut_ids[i] += self->frequencies[i];
+        self->lut_ids[i] += self->frequencies[i];
 
-        // if (self->lut_ids[i] > 1)
-        //     self->lut_ids[i] -= 1;
+        if (self->lut_ids[i] > 2)
+            self->lut_ids[i] -= 2;
     }
-
-    for (int i = 0; i < self->_numOsc; i++)
-    {
-        sig += BK_osc_step(self, i, fbase, base, baseAsFloat, lut, lutOffset);
-    }
-
-    sig /= self->_numOsc;
-
-    // arm_sub_f32(fbase, baseAsFloat, mix, self->_numOsc);
-    // arm_sub_f32(lutOffset, lut, fbase, self->_numOsc);
-    // arm_mult_f32(mix, fbase, baseAsFloat, self->_numOsc);
-    // arm_add_f32(lut, baseAsFloat, fbase, self->_numOsc);
 
     // for (int i = 0; i < self->_numOsc; i++)
     // {
-    //     sig += fbase[i];
+    //     sig += BK_osc_step(self, i, fbase, base, baseAsFloat, lut, lutOffset);
     // }
+
+    arm_sub_f32(fbase, baseAsFloat, mix, self->_numOsc);
+    arm_sub_f32(lutOffset, lut, fbase, self->_numOsc);
+    arm_mult_f32(mix, fbase, baseAsFloat, self->_numOsc);
+    arm_add_f32(lut, baseAsFloat, fbase, self->_numOsc);
+
+    for (int i = 0; i < self->_numOsc; i++)
+    {
+        sig += fbase[i];
+    }
+
+    sig /= self->_numOsc;
 
     return sig;
 }
