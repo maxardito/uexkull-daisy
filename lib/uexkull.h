@@ -11,7 +11,7 @@
 #ifndef UEXKULL_H
 #define UEXKULL_H
 
-#define NUM_OSC 24
+#define NUM_OSC 4
 #define NUM_OUTPUTS 4
 #define MAX_FREQ 20000
 

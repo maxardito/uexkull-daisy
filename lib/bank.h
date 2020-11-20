@@ -41,6 +41,7 @@ typedef struct bank
     float _1vo;             // 1V/Oct input
 
     float *_invHalfSampleRate;
+    float *_lutHalf;
 
     waveform_t waveform; // Waveform for all bank oscillators
 } bank_t;

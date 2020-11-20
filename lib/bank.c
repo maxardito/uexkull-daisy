@@ -34,6 +34,7 @@ void BK_init(bank_t *self,
     {
         self->osc[i] = *osc_init();
         self->_invHalfSampleRate[i] = 2.0f / sampleRate;
+        self->_lutHalf[i] = LUT_SIZE / 2;
         //    self->lfo[i] = *osc_init();
     }
 }
@@ -50,19 +51,71 @@ void BK_setFrequencyVectors(bank_t *self, float *vector, uint8_t numFreq)
 
     for (int i = 0; i < numFreq; i++)
     {
-        osc_time(&(self->osc[i]), self->frequencies[i]);
-        //self->frequencies[i] = _lim_f_n1_1((float)(vector[i] / self->_halfSampleRate));
+        // osc_time(&(self->osc[i]), self->frequencies[i]);
+        self->frequencies[i] = _lim_f_n1_1(self->frequencies[i]);
     }
+}
+
+static float BK_osc_step(bank_t *self,
+                         int index,
+                         float *fbase,
+                         uint16_t *base,
+                         float *baseAsFloat,
+                         float *lut,
+                         float *lutOffset)
+{
+    self->lut_ids[index] = self->lut_ids[index] + self->frequencies[index];
+    if (self->lut_ids[index] >= 2.0)
+    {
+        self->lut_ids[index] -= 2.0;
+    }
+    // lookup table w/ linear interpolation
+    // float fbase = (float)LUT_SIN_HALF * self->lut_ids[index];
+    // uint16_t base = (uint16_t)fbase[index];
+    float mix = fbase[index] - baseAsFloat[index];
+    // float lut = sine_lut[base[index]];
+    float lut_i = lut[index];
+    return (lut_i + mix * (lutOffset[index] - lut_i));
 }
 
 float BK_process(bank_t *self)
 {
     float sig = 0;
 
+    float fbase[self->_numOsc], baseAsFloat[self->_numOsc], mix[self->_numOsc];
+    float lut[self->_numOsc], lutOffset[self->_numOsc];
+    uint16_t base[self->_numOsc];
+
+    arm_mult_f32(self->_lutHalf, self->lut_ids, fbase, self->_numOsc);
+
     for (int i = 0; i < self->_numOsc; i++)
     {
-        sig += osc_step(&(self->osc[i]), 0) / self->_numOsc;
+        base[i] = (uint16_t)fbase[i];
+        baseAsFloat[i] = base[i];
+        lut[i] = cos_lut[base[i]];
+        lutOffset[i] = cos_lut[base[i] + 1];
+        // self->lut_ids[i] += self->frequencies[i];
+
+        // if (self->lut_ids[i] > 1)
+        //     self->lut_ids[i] -= 1;
     }
+
+    for (int i = 0; i < self->_numOsc; i++)
+    {
+        sig += BK_osc_step(self, i, fbase, base, baseAsFloat, lut, lutOffset);
+    }
+
+    sig /= self->_numOsc;
+
+    // arm_sub_f32(fbase, baseAsFloat, mix, self->_numOsc);
+    // arm_sub_f32(lutOffset, lut, fbase, self->_numOsc);
+    // arm_mult_f32(mix, fbase, baseAsFloat, self->_numOsc);
+    // arm_add_f32(lut, baseAsFloat, fbase, self->_numOsc);
+
+    // for (int i = 0; i < self->_numOsc; i++)
+    // {
+    //     sig += fbase[i];
+    // }
 
     return sig;
 }

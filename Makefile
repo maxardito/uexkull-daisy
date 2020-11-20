@@ -66,6 +66,8 @@ SYSTEM_FILES_DIR ?= \
 C_SOURCES += \
 $(LIBDAISY_DIR)/src/system_stm32h7xx.c \
 $(LIBDAISY_DIR)/Drivers/CMSIS/DSP/Source/BasicMathFunctions/arm_mult_f32.c \
+$(LIBDAISY_DIR)/Drivers/CMSIS/DSP/Source/BasicMathFunctions/arm_sub_f32.c \
+$(LIBDAISY_DIR)/Drivers/CMSIS/DSP/Source/BasicMathFunctions/arm_add_f32.c \
 $(SYSTEM_FILES_DIR)/startup_stm32h750xx.c \
 $(CUTEOP_DIR)/src/internal/oscillator.c \
 $(CUTEOP_DIR)/src/dsp_utils/lut_cos.c \
